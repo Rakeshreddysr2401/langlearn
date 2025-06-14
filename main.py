@@ -5,7 +5,7 @@ from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sse_starlette.sse import EventSourceResponse
 
-from graph import agent  # Import from graph.py
+from graph import graph  # Import from graph.py
 from langchain_core.messages import AIMessage
 
 app = FastAPI()
@@ -28,7 +28,7 @@ async def stream_chat(message: str, checkpoint_id: str = Query(default=None)) ->
         config = {"configurable": {"thread_id": thread_id}}
         init_state = {"messages": [{"role": "user", "content": message}]}
 
-        async for event in agent.astream(init_state, config=config, stream_mode="updates"):
+        async for event in graph.astream(init_state, config=config, stream_mode="updates"):
             for value in event.values():
                 if "messages" in value and isinstance(value["messages"][-1], AIMessage):
                     msg = value["messages"][-1]
