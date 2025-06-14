@@ -1,0 +1,36 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# IDEs
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Logs and misc
+*.log
+*.sqlite3
+*.db
+*.pot
+
+# dotenv files (secrets)
+.env
+.env.*
+
+# Compiled files
+*.so
+*.egg-info/
+
+# Jupyter Notebooks checkpoints
+.ipynb_checkpoints/
+
+# Uvicorn reload artifacts
+*.pid
