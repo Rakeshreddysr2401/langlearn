@@ -3,18 +3,16 @@ from langgraph.types import interrupt
 
 
 
-@tool("book_hotel")
-
-def book_hotel(hotel_name: str):
-   """Book a hotel"""
+@tool("human_assistance",description="Used to request human assistance for booking a hotel.")
+def human_assistance():
    response = interrupt(
-       f"Trying to call `book_hotel` with args {{'hotel_name': {hotel_name}}}. "
+       f"Trying to call `book_hotel` with args. "
        "Please accept or reject."
    )
    if response == "accept":
-       return f"Successfully booked a stay at {hotel_name}."
+       return f"Successfully booked a stay."
    elif response == "reject":
-       return f"booking a stay at {hotel_name} has been failed."
+       return f"booking a stay has been failed."
    else:
        raise ValueError(f"Unknown response type: {response['type']}")
 

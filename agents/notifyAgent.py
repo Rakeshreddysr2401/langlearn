@@ -6,29 +6,36 @@ from langgraph.prebuilt import ToolNode, tools_condition
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
 from langgraph.types import Command, interrupt
-from uuid import uuid4
+
 from tools.tavily_tool import tavily_tool
-from tools.human_tool import human_assistance
 from states.states import State
 
+# Define the tools to use
+tools = [tavily_tool]
 
-tools = [tavily_tool,human_assistance]
-
+# Set up persistent memory
 memory = MemorySaver()
 
+# Initialize the model and bind the tools
 llm = init_chat_model("gpt-4o-mini", temperature=0)
-
 llm_with_tools = llm.bind_tools(tools)
 
 
 def chatAgent(state: State):
+    """
+    Model node: processes user input and returns message.
+    The model can decide to call tools or respond directly.
+    """
     messages = state["messages"]
     response = llm_with_tools.invoke(messages)
     return {"messages": [response]}
 
 
-
 def should_continue(state: State):
+    """
+    Conditional edge function to determine next step.
+    Returns "tools" if the last message has tool calls, otherwise "end".
+    """
     last_message = state["messages"][-1]
     if hasattr(last_message, 'tool_calls') and last_message.tool_calls:
         return "tools"
@@ -63,46 +70,6 @@ graph_builder.add_edge("tools", "agent")
 
 # Compile the graph with memory
 graph = graph_builder.compile(checkpointer=memory)
-
-config = {"configurable": {"thread_id": 1}}
-
-
-if __name__ == "__main__":
-    while True:
-
-        snapshot = graph.get_state(config)
-        if "__interrupt__" in snapshot.next :
-            user_input=Command(resume={"data":input("Enter Interrupt Query: ")})
-        else:
-            user_input = {"messages": [{"role": "user", "content": input("User:")}]}
-        for event in graph.stream(user_input, config,stream_mode=["updates","custom"]):
-            print("EVENT ",event)
-            print("Event Type:", type(event))
-            if event[0] == "updates":
-                dict = event[-1]
-                if "__interrupt__" in dict:
-                    interrupt_obj = dict["__interrupt__"][0]  # Get the Interrupt instance
-                    value = interrupt_obj.value
-                    print("Interrupt Message:", value)
-                else:
-                    for value in dict.values():
-                        if "messages" in value and isinstance(value["messages"][-1], HumanMessage):
-                            print("Human Message", value["messages"][-1].content)
-                        elif "messages" in value and isinstance(value["messages"][-1], AIMessage) and not getattr(value["messages"][-1], "tool_calls", []):
-                            print("AI Message:", value["messages"][-1].content)
-
-                        else:
-                            print("Other Message:", value)
-
-            if event[0] == "custom":
-                dict = event[-1]
-                print(f"type{dict["type"]} : data: {dict["data"]}")
-
-
-
-
-
-
 
 #
 #
