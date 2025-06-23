@@ -5,6 +5,7 @@ from typing import Optional
 from dotenv import load_dotenv
 import os
 import time
+from langgraph.types import interrupt
 
 # 🔐 Load environment variables
 load_dotenv()
@@ -42,34 +43,57 @@ class WhatsAppMessageResult(BaseModel):
     args_schema=WhatsAppMessageArgs,
 )
 def send_whatsapp_message(
-    to_number: str,
-    body: str,
+        to_number: str,
+        body: str,
 ) -> WhatsAppMessageResult:
     """
     Use this to send a WhatsApp message to any of my contacts.
     The phone number can be with or without +91. The message will go to WhatsApp.
     Make sure the message sounds casual and natural as if I wrote it myself.
     Returns a status, message_sid, and optional error_message.
+
+    ⚠️ This tool requires human approval before sending messages.
     """
 
+    # ✅ Normalize number first
+    clean_num = to_number.strip().replace(" ", "").replace("whatsapp:", "")
+
+    if clean_num.startswith("+"):
+        normalized = clean_num
+    elif clean_num.startswith("91") and len(clean_num) == 12:
+        normalized = f"+{clean_num}"
+    elif len(clean_num) == 10 and clean_num.isdigit():
+        normalized = f"+91{clean_num}"
+    else:
+        normalized = f"+{clean_num}"
+
+    # 🛑 REQUEST HUMAN APPROVAL BEFORE SENDING
+    approval_request = {
+        "type": "approve_reject",
+        "action": "send_whatsapp_message",
+        "number": normalized,
+        "text_msg": body,
+    }
+
+    # This will pause execution and wait for human input
+    human_approval = interrupt(approval_request)
+
+    # Check if human approved the action
+    print("human approval...",human_approval)
+    if not human_approval or human_approval.get("status") != "approved":
+        return WhatsAppMessageResult(
+            status="fail",
+            message_sid=None,
+            error_message= human_approval.get("text_msg")
+        )
+
+    # 📨 If approved, proceed with sending
     try:
-        # ✅ Normalize number
-        clean_num = to_number.strip().replace(" ", "").replace("whatsapp:", "")
-
-        if clean_num.startswith("+"):
-            normalized = clean_num
-        elif clean_num.startswith("91") and len(clean_num) == 12:
-            normalized = f"+{clean_num}"
-        elif len(clean_num) == 10 and clean_num.isdigit():
-            normalized = f"+91{clean_num}"
-        else:
-            normalized = f"+{clean_num}"
-
         # ✅ Send message
         msg = client.messages.create(
             from_=f"whatsapp:{TWILIO_FROM_NUMBER}",
             to=f"whatsapp:{normalized}",
-            body=body,
+            body=human_approval.get("text_msg")
         )
         print("Message is being sent... ⏳")
 

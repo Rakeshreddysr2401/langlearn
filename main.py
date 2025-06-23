@@ -33,8 +33,12 @@ async def stream_chat(
 
         config = {"configurable": {"thread_id": thread_id}}
 
-        # Prepare input
-        init_state = Command(resume={"data": message}) if interrupt else {"messages": [{"role": "user", "content": message}]}
+
+        init_state = {"messages": [{"role": "user", "content": message}]}
+        if interrupt:
+            parsed_data = json.loads(message)
+            init_state = Command(resume=parsed_data)
+
 
         try:
             for event in graph.stream(init_state, config=config, stream_mode=["updates", "custom"]):
@@ -44,6 +48,7 @@ async def stream_chat(
                 if event_type == "updates":
                     # Handle updates
                     if "__interrupt__" in event_data:
+                        print("interrupt type", type(event_data["__interrupt__"]))
                         interrupt_obj = event_data["__interrupt__"][0]
                         yield {"data": json.dumps({"type": "interrupt_request", "payload": interrupt_obj.value})}
                         continue
@@ -60,15 +65,18 @@ async def stream_chat(
                                 query = tool_call.get("args", {}).get("query")
                                 if query:
                                     yield {"data": json.dumps({"type": "tool_calling", "query": query})}
+
                         elif isinstance(last_message, ToolMessage):
                             raw_content = last_message.content
                             try:
                                 results = json.loads(raw_content)
+
+                                # Extract URLs from tool results
                                 urls = [info["url"] for info in results if isinstance(info, dict) and "url" in info]
                                 if urls:
                                     yield {"data": json.dumps({"type": "search_urls", "urls": urls})}
                             except json.JSONDecodeError as e:
-                                yield {"data": json.dumps({"type": "tool_error", "error": f"Failed to parse tool results: {e}"})}
+                                yield {"data": json.dumps({"type": "tool_result", "result": raw_content })}
 
                 elif event_type == "custom":
                     yield {"data": json.dumps({
