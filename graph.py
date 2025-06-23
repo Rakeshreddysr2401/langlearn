@@ -9,10 +9,11 @@ from langgraph.types import Command, interrupt
 from uuid import uuid4
 from tools.tavily_tool import tavily_tool
 from tools.human_tool import human_assistance
+from tools.twillo_tool import send_whatsapp_message
 from states.states import State
 
 
-tools = [tavily_tool,human_assistance]
+tools = [tavily_tool,human_assistance, send_whatsapp_message]
 
 memory = MemorySaver()
 
@@ -72,7 +73,7 @@ if __name__ == "__main__":
 
         snapshot = graph.get_state(config)
         if "__interrupt__" in snapshot.next :
-            user_input=Command(resume={"data":input("Enter Interrupt Query: ")})
+            user_input=Command(resume={"approved":input("Enter Interrupt Query: ")})
         else:
             user_input = {"messages": [{"role": "user", "content": input("User:")}]}
         for event in graph.stream(user_input, config,stream_mode=["updates","custom"]):
