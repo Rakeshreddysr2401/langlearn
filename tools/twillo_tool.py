@@ -47,7 +47,7 @@ def send_whatsapp_message(
         body: str,
 ) -> WhatsAppMessageResult:
     """
-    Use this to send a WhatsApp message to any of my contacts.
+    Use this to send a WhatsApp message to any of my contacts and make sure to have a contact number.
     The phone number can be with or without +91. The message will go to WhatsApp.
     Make sure the message sounds casual and natural as if I wrote it myself.
     Returns a status, message_sid, and optional error_message.
