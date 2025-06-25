@@ -51,7 +51,7 @@ def send_whatsapp_message(
     The phone number can be with or without +91. The message will go to WhatsApp.
     Make sure the message sounds casual and natural as if I wrote it myself.
     Returns a status, message_sid, and optional error_message.
-
+    NOTE:Don't call this tool without a valid phone number
     ⚠️ This tool requires human approval before sending messages.
     """
 

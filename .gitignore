@@ -1,36 +1,32 @@
-# Python cache
-__pycache__/
-*.py[cod]
-*.pyo
-
-# Virtual environment
+# Ignore virtual envs
 .venv/
 venv/
 env/
 
-# IDEs
+# Ignore git and IDE configs
+.git/
 .vscode/
 .idea/
 
-# macOS
-.DS_Store
-
-# Logs and misc
-*.log
-*.sqlite3
-*.db
-*.pot
-
-# dotenv files (secrets)
-.env
-.env.*
-
-# Compiled files
+# Ignore caches and compiled files
+__pycache__/
+*.pyc
+*.pyo
 *.so
 *.egg-info/
 
-# Jupyter Notebooks checkpoints
+# Ignore notebooks checkpoints
 .ipynb_checkpoints/
 
-# Uvicorn reload artifacts
+# Ignore secrets
+.env
+.env.*
+
+# Ignore local DBs and logs
+*.log
+*.sqlite3
+*.db
 *.pid
+
+# macOS stuff
+.DS_Store
