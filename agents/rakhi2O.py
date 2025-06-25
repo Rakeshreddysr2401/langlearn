@@ -1,4 +1,4 @@
-# graph.py
+# rakhi2O.py
 from langchain.chat_models import init_chat_model
 from langchain_core.tools import tool
 from langgraph.graph import StateGraph, END
@@ -7,13 +7,11 @@ from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
 from langgraph.types import Command, interrupt
 from uuid import uuid4
-from tools.tavily_tool import tavily_tool
-from tools.human_tool import human_assistance
 from tools.twillo_tool import send_whatsapp_message
 from states.states import State
 
 
-tools = [tavily_tool,human_assistance, send_whatsapp_message]
+tools = [send_whatsapp_message]
 
 memory = MemorySaver()
 
@@ -22,7 +20,7 @@ llm = init_chat_model("gpt-4o-mini", temperature=0)
 llm_with_tools = llm.bind_tools(tools)
 
 
-def chatAgent(state: State):
+def personalAgent(state: State):
     messages = state["messages"]
     response = llm_with_tools.invoke(messages)
     return {"messages": [response]}
@@ -43,7 +41,7 @@ tool_node = ToolNode(tools=tools)
 graph_builder = StateGraph(State)
 
 # Add nodes
-graph_builder.add_node("agent", chatAgent)
+graph_builder.add_node("agent", personalAgent)
 graph_builder.add_node("tools", tool_node)
 
 # Set entry point
@@ -95,7 +93,9 @@ if __name__ == "__main__":
                         else:
                             print("Other Message:", value)
 
-
+            if event[0] == "custom":
+                dict = event[-1]
+                print(f"type{dict["type"]} : data: {dict["data"]}")
 
 
 

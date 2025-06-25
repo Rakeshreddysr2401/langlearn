@@ -21,9 +21,9 @@ def step_1(state):
 def human_feedback(state):
     print("---human_feedback---")
     writer = get_stream_writer()
-    writer({"data": "Retrieved 0/100 records", "type": "progress"})
+    writer({"data": "Calling Mom", "type": "request_approval"})
     # highlight-next-line
-    feedback = interrupt("Please provide feedback:")
+    feedback = interrupt("Please provide permision:")
     return {"user_feedback": feedback}
 
 
