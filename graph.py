@@ -10,10 +10,11 @@ from uuid import uuid4
 from tools.tavily_tool import tavily_tool
 from tools.human_tool import human_assistance
 from tools.twillo_tool import send_whatsapp_message
+from Retrievers.qdrant_retriver import qdrant_search_tool
 from states.states import State
 
 
-tools = [tavily_tool,human_assistance, send_whatsapp_message]
+tools = [tavily_tool,human_assistance, send_whatsapp_message,qdrant_search_tool]
 
 memory = MemorySaver()
 

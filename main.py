@@ -8,6 +8,8 @@ from graph import graph  # Import from graph.py
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 from langgraph.types import Command
 
+from prompts import identity_prompt
+
 app = FastAPI()
 
 app.add_middleware(
@@ -34,7 +36,7 @@ async def stream_chat(
         config = {"configurable": {"thread_id": thread_id}}
 
 
-        init_state = {"messages": [{"role": "user", "content": message}]}
+        init_state = {"messages": [{"role":"system","content":identity_prompt},{"role": "user", "content": message}]}
         if interrupt:
             parsed_data = json.loads(message)
             init_state = Command(resume=parsed_data)
@@ -66,7 +68,7 @@ async def stream_chat(
                                 if query:
                                     yield {"data": json.dumps({"type": "tool_calling", "query": query})}
 
-                        elif isinstance(last_message, ToolMessage):
+                        elif isinstance(last_message, ToolMessage) :
                             raw_content = last_message.content
                             try:
                                 results = json.loads(raw_content)
@@ -76,7 +78,8 @@ async def stream_chat(
                                 if urls:
                                     yield {"data": json.dumps({"type": "search_urls", "urls": urls})}
                             except json.JSONDecodeError as e:
-                                yield {"data": json.dumps({"type": "tool_result", "result": raw_content })}
+                                pass
+                                # yield {"data": json.dumps({"type": "tool_result", "result": raw_content })}
 
                 elif event_type == "custom":
                     yield {"data": json.dumps({
