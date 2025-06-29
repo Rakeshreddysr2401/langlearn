@@ -35,8 +35,11 @@ async def stream_chat(
 
         config = {"configurable": {"thread_id": thread_id}}
 
+        init_state = {
+            "messages": [identity_prompt, {"role": "user", "content": message}],
+            "users_query": message
+        }
 
-        init_state = {"messages": [{"role":"system","content":identity_prompt},{"role": "user", "content": message}]}
         if interrupt:
             parsed_data = json.loads(message)
             init_state = Command(resume=parsed_data)
@@ -60,8 +63,21 @@ async def stream_chat(
                             continue
                         last_message = node_value["messages"][-1]
 
-                        if isinstance(last_message, AIMessage) and not getattr(last_message, "tool_calls", []):
-                            yield {"data": json.dumps({"type": "content", "content": last_message.content})}
+                        print("node_name", node_name)
+
+                        print("type_lst",type(last_message))
+                        if (
+                                "final_response" in node_value
+                                and isinstance(node_value["final_response"], AIMessage)
+                                and node_value["final_response"].content
+                        ):
+                            yield {
+                                "data": json.dumps({
+                                    "type": "content",
+                                    "content": node_value["final_response"].content
+                                })
+                            }
+
                         elif isinstance(last_message, AIMessage) and getattr(last_message, "tool_calls", []):
                             for tool_call in last_message.tool_calls:
                                 query = tool_call.get("args", {}).get("query")
@@ -80,6 +96,9 @@ async def stream_chat(
                             except json.JSONDecodeError as e:
                                 pass
                                 # yield {"data": json.dumps({"type": "tool_result", "result": raw_content })}
+
+
+
 
                 elif event_type == "custom":
                     yield {"data": json.dumps({
