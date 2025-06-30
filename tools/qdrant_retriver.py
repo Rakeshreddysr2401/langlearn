@@ -26,7 +26,8 @@ vectorstore = Qdrant(
 
 @tool
 def qdrant_search_tool(query: str):
-    """Searches personal knowledge base for boss-related questions."""
+    """Questions about Rakesh (skills, projects, experience)** → Use `qdrant_search_tool` first
+       Searches personal knowledge base for boss-related questions."""
     results = vectorstore.similarity_search(query, k=3)
     if not results:
         return "I couldn’t find anything in my knowledge base for that."
