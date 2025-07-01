@@ -1,13 +1,17 @@
+# chains/chatAgentChain.py
 from langchain_core.messages import SystemMessage
 from langchain_core.runnables import RunnableLambda
 from llm_config import llm_with_tools
 
 
-# Retry system prompt
-def get_retry_prompt(retry_count: int, critique: str, suggestions: list[str] = []) -> SystemMessage:
-    suggestion_text = "\n".join(f"- {s}" for s in suggestions) if suggestions else ""
+def get_retry_prompt(retry_count: int, critique: str, suggestions: list[str] = None) -> SystemMessage:
+    if suggestions is None:
+        suggestions = []
+
+    suggestion_text = "\n".join(f"- {s}" for s in suggestions) if suggestions else "No specific suggestions provided."
+
     return SystemMessage(content=f"""
-RETRY ATTEMPT #{retry_count + 1}/3
+RETRY ATTEMPT #{retry_count + 1}/2
 
 The previous response had issues:
 {critique.strip()}
@@ -15,8 +19,9 @@ The previous response had issues:
 Suggestions for improvement:
 {suggestion_text}
 
-Please revise your last response carefully. Keep it concise (<250 words), relevant, and directly address the user's question.
+Please revise your response carefully. Keep it concise (<250 words), relevant, and directly address the user's question.
 """.strip())
 
-# Optional: wrap in a LangChain-style Runnable if needed
+
+# Chat chain using the LLM with tools
 chat_chain = RunnableLambda(lambda messages: llm_with_tools.invoke(messages))

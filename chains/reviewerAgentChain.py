@@ -17,7 +17,6 @@ class ReviewFeedback(BaseModel):
 parser = PydanticOutputParser(pydantic_object=ReviewFeedback)
 format_instructions = parser.get_format_instructions()
 
-
 review_prompt = PromptTemplate.from_template(
     """
 You are a quality reviewer AI. You evaluate the assistant's response based on the full conversation history.
@@ -29,8 +28,12 @@ Checklist:
 4. Should it have used tools to improve the answer?
 
 If any issues exist, return `satisfied=False` with critique and suggestions.
+If the response is good enough, return `satisfied=True`.
 
 {format_instructions}
+
+User's Original Query:
+{user_query}
 
 Conversation History:
 {chat_history}
@@ -40,7 +43,6 @@ Final Assistant Response:
 """,
     partial_variables={"format_instructions": format_instructions}
 )
-
 
 # Final chain: Prompt → LLM → Pydantic parser
 review_chain = review_prompt | llm | parser
