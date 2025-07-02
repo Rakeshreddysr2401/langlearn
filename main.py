@@ -48,12 +48,11 @@ async def stream_chat(
         try:
             for event in graph.stream(init_state, config=config, stream_mode=["updates", "custom"]):
                 event_type, event_data = event
-                print(f"Event: {event}")
 
                 if event_type == "updates":
                     # Handle updates
                     if "__interrupt__" in event_data:
-                        print("interrupt type", type(event_data["__interrupt__"]))
+                        # print("interrupt type", type(event_data["__interrupt__"]))
                         interrupt_obj = event_data["__interrupt__"][0]
                         yield {"data": json.dumps({"type": "interrupt_request", "payload": interrupt_obj.value})}
                         continue
@@ -63,22 +62,7 @@ async def stream_chat(
                             continue
                         last_message = node_value["messages"][-1]
 
-                        print("node_name", node_name)
-
-                        print("type_lst",type(last_message))
-                        if (
-                                "final_response" in node_value
-                                and isinstance(node_value["final_response"], AIMessage)
-                                and node_value["final_response"].content
-                        ):
-                            yield {
-                                "data": json.dumps({
-                                    "type": "content",
-                                    "content": node_value["final_response"].content
-                                })
-                            }
-
-                        elif isinstance(last_message, AIMessage) and getattr(last_message, "tool_calls", []):
+                        if isinstance(last_message, AIMessage) and getattr(last_message, "tool_calls", []):
                             for tool_call in last_message.tool_calls:
                                 query = tool_call.get("args", {}).get("query")
                                 if query:
@@ -88,7 +72,6 @@ async def stream_chat(
                             raw_content = last_message.content
                             try:
                                 results = json.loads(raw_content)
-
                                 # Extract URLs from tool results
                                 urls = [info["url"] for info in results if isinstance(info, dict) and "url" in info]
                                 if urls:
@@ -97,16 +80,15 @@ async def stream_chat(
                                 pass
                                 # yield {"data": json.dumps({"type": "tool_result", "result": raw_content })}
 
-
-
-
                 elif event_type == "custom":
-                    yield {"data": json.dumps({
-                        "type": "interrupt_request",
-                        "interruptType": event_data.get("type", "generic"),
-                        "payload": event_data,
-                    })}
-
+                    print("custom data",event_data)
+                    if(event_data.get("type")=="final_response"):
+                        yield {
+                            "data": json.dumps({
+                                "type": "content",
+                                "content": event_data.get("data").content
+                            })
+                        }
             # End event on successful completion
             yield {"data": json.dumps({"type": "end"})}
 
