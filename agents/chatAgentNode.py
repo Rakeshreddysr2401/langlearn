@@ -1,3 +1,4 @@
+# agents/chatAgentNode.py
 from langchain_core.messages import BaseMessage, AIMessage
 from chains.chatAgentChain import get_retry_prompt, chat_chain
 from states.states import State
@@ -8,8 +9,11 @@ def chatAgent(state: State):
     review = state.get("review_feedback")
     retry_count = state.get("retry_count", 0)
 
+    print(f"Chat Agent called : {retry_count+1} st time")
+
     full_messages: list[BaseMessage] = []
 
+    # Add retry prompt if we have negative feedback
     if review and review.get("satisfied") is False:
         full_messages.append(
             get_retry_prompt(
@@ -21,14 +25,15 @@ def chatAgent(state: State):
 
     full_messages.extend(messages)
 
-    response: AIMessage = chat_chain.invoke(full_messages)
-
-    # Do NOT increment retry_count here (tool-safe)
-    is_final = review is None or review.get("satisfied") is True or retry_count >= 2
+    try:
+        response: AIMessage = chat_chain.invoke(full_messages)
+    except Exception as e:
+        print(f"Error in chat_chain.invoke: {e}")
+        raise
 
     return {
         "messages": messages + [response],
         "retry_count": retry_count,
         "chatAgentResponse": response,
-        "final_response": response if is_final else None
     }
+
