@@ -24,7 +24,7 @@ You are a quality reviewer AI. You evaluate the assistant's response based on th
 Checklist:
 1. Does the response clearly and fully answer the user's query?
 2. Is the response relevant and factually correct?
-3. Is it under 250 words?
+3. Is it under 120 words?
 4. Should it have used tools to improve the answer?
 
 If any issues exist, return `satisfied=False` with critique and suggestions.
