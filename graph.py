@@ -1,10 +1,9 @@
 # graph.py
 from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
-from langgraph.checkpoint.memory import MemorySaver
-
 from agents.chatAgentNode import chatAgent
 from agents.reviewerAgentNode import reviewerAgent
+from configs.memory_config import get_memory
 from states.states import State
 from tools import get_tools
 
@@ -15,7 +14,7 @@ MAX_RETRIES = 2
 def create_chat_graph():
     """Create and return the compiled chat graph."""
     tools = get_tools()
-    memory = MemorySaver()
+    memory = get_memory()
 
     # Build the graph
     graph_builder = StateGraph(State)

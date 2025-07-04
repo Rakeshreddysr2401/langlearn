@@ -1,10 +1,10 @@
 # llm_config.py
-
+from langchain.agents import initialize_agent, AgentType
 from langchain.chat_models import init_chat_model as init_openai_model
 from langchain_community.chat_models import ChatOllama
 from langchain_google_genai import ChatGoogleGenerativeAI
 from tools import get_tools
-
+from langchain_community.chat_models import ChatOllama
 # Provider-Model registry
 PROVIDER_REGISTRY = {
     "openai": {
@@ -17,6 +17,7 @@ PROVIDER_REGISTRY = {
     "ollama": {
         "llama3": lambda temperature: ChatOllama(model="llama3", temperature=temperature),
         "mistral": lambda temperature: ChatOllama(model="mistral", temperature=temperature),
+        "phi3:mini": lambda temperature: ChatOllama(model="phi3:mini", temperature=temperature),
     },
     "gemini": {
         "gemini-pro": lambda temperature: ChatGoogleGenerativeAI(model="gemini-pro", temperature=temperature),
@@ -43,3 +44,13 @@ def get_llm_with_tools(provider: str = "openai", model: str = "gpt-4o-mini", tem
 
 llm = get_llm()
 llm_with_tools = get_llm_with_tools()
+
+
+# llm = get_llm(provider="ollama", model="phi3:mini", temperature=0)
+# llm_with_tools = initialize_agent(
+#     tools=get_tools(),
+#     llm=llm,
+#     agent=AgentType.OPENAI_FUNCTIONS,  # Simulates tool calling
+#     verbose=True
+# )
+
