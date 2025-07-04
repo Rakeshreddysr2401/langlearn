@@ -16,7 +16,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["*"],  # or use your frontend ngrok URL for security
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -98,6 +98,7 @@ async def stream_chat(
     checkpoint_id: str = Query(default=None),
     interrupt: bool = Query(default=False)
 ) -> EventSourceResponse:
+    print(f"🔥 Received message: {message}")
 
     async def event_generator():
         thread_id = checkpoint_id or str(uuid4())
