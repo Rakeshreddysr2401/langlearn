@@ -3,6 +3,7 @@ name: Claude Code Reviewer
 on:
   issue_comment:
     types: [created]
+  workflow_dispatch:
 
 permissions: write-all
 
