@@ -14,18 +14,19 @@ jobs:
       github.event.issue.pull_request &&
       contains(github.event.comment.body, '/claude-review')
     steps:
-      - name: PR Info
+      - name: DEBUG - Log Context
         run: |
           echo "Comment: ${{ github.event.comment.body }}"
+          echo "Repo: ${{ github.repository }}"
           echo "Issue Number: ${{ github.event.issue.number }}"
-          echo "Repository: ${{ github.repository }}"
+          echo "Is PR: ${{ github.event.issue.pull_request != null }}"
 
       - name: Checkout Repo
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: Get PR Details
+      - name: Get PR SHAs
         id: pr
         run: |
           PR_JSON=$(gh api repos/${{ github.repository }}/pulls/${{ github.event.issue.number }})
@@ -38,6 +39,4 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: openai-40-mini  # Optional, default is `claude-3-5-sonnet-20240620`
           EXCLUDE: "*.md,*.txt,package-lock.json,*.yml,*.yaml"
-       
