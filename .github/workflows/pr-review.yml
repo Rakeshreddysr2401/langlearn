@@ -1,4 +1,4 @@
-name: PR Review with GPT
+name: "PR Review with GPT"
 
 on:
   pull_request:
@@ -7,28 +7,11 @@ on:
 jobs:
   review-pr:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout langlearn repo
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Clone my-github-reviewer repo
-      run: git clone ${{ secrets.MY_REVIEWER_REPO }} my-github-reviewer
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-
-    - name: Install dependencies
-      run: |
-        cd my-github-reviewer
-        pip install -r requirements.txt
-
-    - name: Run GitHub Reviewer
-      env:
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        cd my-github-reviewer
-        python main.py
+      - name: Run GitHub Reviewer Action
+        uses: Rakeshreddysr2401/my-github-reviewer@v1
+        with:
+          openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
