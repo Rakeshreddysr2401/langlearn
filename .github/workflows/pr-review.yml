@@ -14,7 +14,7 @@ jobs:
       - name: PR Info
         run: |
           echo "Comment: ${{github.event.comment.body}}"
-          echo "Issue Number: ${{ github.event.issue.number}}"
+          echo "Issue Number: ${{ github.event}}"
           echo "Repository: ${{ github.repository}}"
           
       - name: Checkout Repo
