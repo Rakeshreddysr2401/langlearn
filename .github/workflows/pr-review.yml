@@ -36,5 +36,6 @@ jobs:
         with:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_EVENT_PATH: ${{ github.event_path }}
+          PULL_NUMBER: ${{ github.event.issue.number}}
+          REPOSITORY: ${{ github.repository}}
           EXCLUDE: "*.md,*.txt,package-lock.json,*.yml,*.yaml"
