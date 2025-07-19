@@ -73,7 +73,7 @@ def create_chat_graph():
         }
     )
 
-    return graph_builder.compile(checkpointer=memory)
+    return graph_builder.comile(checkpointer=memory)
 
 
 # Create the graph instance
