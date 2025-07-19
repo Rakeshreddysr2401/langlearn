@@ -3,33 +3,23 @@ name: "PR Review with GPT"
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    
+
 permissions: write-all
 
 jobs:
   review-pr:
     runs-on: ubuntu-latest
-    
+
     steps:
-      - name: PR Info
+      - name: Log PR Info
         run: |
-          echo "Comment: ${{github.event.comment.body}}"
-          echo "Issue Number: ${{ github.event}}"
-          echo "Repository: ${{ github.repository}}"
-          
-      - name: Checkout Repo
+          echo "PR Number: ${{ github.event.pull_request.number }}"
+          echo "Repository: ${{ github.repository }}"
+
+      - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      # - name: Get PR Details
-      #   id: pr
-      #   run: |
-      #     PR_JSON=${gh api repos/${{ github.repository }}/pulls/${{ github.event.issue.number }})
-      #     echo "head_sha=$(echo $PR_JSON | jq -r .head.sha)" >> $GITHUB_OUTPUT
-      #     echo "base_sha=$(echo $PR_JSON | jq -r .base.sha)" >> $GITHUB_OUTPUT
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run GitHub Reviewer Action
         uses: Rakeshreddysr2401/my-github-reviewer@dev-0.0.0
@@ -37,5 +27,5 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PULL_NUMBER: ${{ github.event.pull_request.number }}
-          REPOSITORY: ${{ github.repository}}
+          REPOSITORY: ${{ github.repository }}
           EXCLUDE: "*.md,*.txt,package-lock.json,*.yml,*.yaml"
