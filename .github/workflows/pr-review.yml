@@ -2,7 +2,7 @@ name: "PR Review with GPT"
 
 on:
   pull_request:
-    types: [created]
+    types: [opened, synchronize, reopened]
 
 permissions: write-all
 
