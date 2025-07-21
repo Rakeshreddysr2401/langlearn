@@ -9,7 +9,9 @@ permissions: write-all
 jobs:
   review-pr:
     runs-on: ubuntu-latest
-
+    if: |
+      github.event.issue.pull_request &&
+      contains(github.event.comment.body, '/claude-review')    
     steps:
       - name: Log PR Info
         run: |
