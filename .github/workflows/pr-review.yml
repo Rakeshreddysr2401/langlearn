@@ -22,7 +22,7 @@ jobs:
           fetch-depth: 0
 
       - name: Run GitHub Reviewer Action
-        uses: Rakeshreddysr2401/my-github-reviewer@dev-0.0.0
+        uses: Rakeshreddysr2401/my-github-reviewer@dev-1.0.0
         with:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
