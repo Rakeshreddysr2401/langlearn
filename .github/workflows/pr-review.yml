@@ -17,6 +17,8 @@ jobs:
         run: |
           echo "PR Number: ${{ github.event.pull_request.number }}"
           echo "Repository: ${{ github.repository }}"
+          echo "Comment: ${{ github.event.comment.body }}"
+
 
       - name: Checkout Repository
         uses: actions/checkout@v4
