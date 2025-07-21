@@ -9,9 +9,6 @@ permissions: write-all
 jobs:
   review-pr:
     runs-on: ubuntu-latest
-    if: |
-      github.event.issue.pull_request &&
-      contains(github.event.comment.body, '/git-review')    
     steps:
       - name: Log PR Info
         run: |
