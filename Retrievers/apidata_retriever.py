@@ -21,7 +21,7 @@ def call_api(query, api_url, api_key):
         return {}  # Return empty dict for errors
 
 api_url = "http://decisionservices-ws.c-qa4.svc.rnq.k8s.lot.com/v1/chat"
-api_key = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImdhdXRoLWtleS1pZC0xIn0..."
+api_key = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImdhdXRoLWtleS1pZC0xIn0.."
 
 def apidata_retriever(query, api_url=api_url, api_key=api_key):
     resource = call_api(query, api_url, api_key)
