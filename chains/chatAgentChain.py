@@ -8,7 +8,7 @@ def get_retry_prompt(retry_count: int, critique: str, suggestions: list[str] = N
     if suggestions is None:
         suggestions = []
 
-    suggestion_text = "\n".join(f"- {s}" for s in suggestions) if suggestions else "No specific suggestions provided."
+    suggestion_tex".join(f"- {s}" for s in suggestions) if suggestions else "No specific suggestions provided."
 
     return SystemMessage(content=f"""
 RETRY ATTEMPT #{retry_count + 1}/2
@@ -24,4 +24,4 @@ Please revise your response carefully. Keep it concise (<120 words), relevant, a
 
 
 # Chat chain using the LLM with tools
-chat_chain = RunnableLambda(lambda messages: llm_with_tools.invoke(messages))
+chat_chain = RunnableLamba(lambda messages: llm_with_tools.invoke(messages))
