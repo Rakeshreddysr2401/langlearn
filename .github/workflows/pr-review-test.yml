@@ -1,32 +1,32 @@
-name: "PR Review with GPT"
+# name: "PR Review with GPT"
 
-on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+# on:
+#   pull_request:
+#     types: [opened, synchronize, reopened]
 
-permissions: write-all
+# permissions: write-all
 
-jobs:
-  review-pr:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Log PR Info
-        run: |
-          echo "PR Number: ${{ github.event.pull_request.number }}"
-          echo "Repository: ${{ github.repository }}"
-          echo "Comment: ${{ github.event.comment.body }}"
+# jobs:
+#   review-pr:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Log PR Info
+#         run: |
+#           echo "PR Number: ${{ github.event.pull_request.number }}"
+#           echo "Repository: ${{ github.repository }}"
+#           echo "Comment: ${{ github.event.comment.body }}"
 
 
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+#       - name: Checkout Repository
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
 
-      - name: Run GitHub Reviewer Action
-        uses: Rakeshreddysr2401/my-github-reviewer@dev-llm-config
-        with:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PULL_NUMBER: ${{ github.event.pull_request.number }}
-          REPOSITORY: ${{ github.repository }}
-          EXCLUDE: "*.md,*.txt,package-lock.json,*.yml,*.yaml"
+#       - name: Run GitHub Reviewer Action
+#         uses: Rakeshreddysr2401/my-github-reviewer@dev-llm-config
+#         with:
+#           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#           PULL_NUMBER: ${{ github.event.pull_request.number }}
+#           REPOSITORY: ${{ github.repository }}
+#           EXCLUDE: "*.md,*.txt,package-lock.json,*.yml,*.yaml"
