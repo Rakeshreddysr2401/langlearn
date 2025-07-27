@@ -33,3 +33,6 @@ jobs:
           PULL_NUMBER: ${{ github.event.issue.number }}
           REPOSITORY: ${{ github.repository }}
           EXCLUDE: "*.md,*.txt,package-lock.json,*.yml,*.yaml"
+          USE_VECTORSTORE: "true"
+          MAX_LOOP: "2"
+
