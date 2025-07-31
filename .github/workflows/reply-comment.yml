@@ -8,8 +8,9 @@ permissions: write-all
 jobs:
   review-pr:
     if: |
-      (github.event.issue.pull_request && contains(github.event.comment.body, '/git-reply')) ||
+      (github.event.issue.pull_request && (github.event.comment.in_reply_to_id != null || contains(github.event.comment.body, '/git-reply'))) ||
       (github.event_name == 'pull_request_review_comment')
+
     runs-on: ubuntu-latest
     steps:
       - name: Set Mode
