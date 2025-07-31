@@ -1,0 +1,68 @@
+name: "PR Review with Reply on Bot"
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  pull_request:
+    types: [opened, synchronize]
+permissions: write-all
+jobs:
+  review-or-reply:
+    if: |
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '/git-reply')) ||
+      (github.event_name == 'pull_request_review_comment') ||
+      (github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'synchronize'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set Mode
+        id: set_mode
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request_review_comment" ]]; then
+            if [[ "${{ github.event.comment.in_reply_to_id }}" != "null" ]]; then
+              echo "mode=reply" >> $GITHUB_OUTPUT
+              echo "Mode: Reply to existing comment"
+            else
+              echo "mode=review" >> $GITHUB_OUTPUT
+              echo "Mode: Review comment on code"
+            fi
+          elif [[ "${{ github.event_name }}" == "issue_comment" && "${{ contains(github.event.comment.body, '/git-reply') }}" == "true" ]]; then
+            echo "mode=review" >> $GITHUB_OUTPUT
+            echo "Mode: Manual review triggered"
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "mode=review" >> $GITHUB_OUTPUT
+            echo "Mode: Auto review on PR"
+          else
+            echo "mode=review" >> $GITHUB_OUTPUT
+            echo "Mode: Default review"
+          fi
+      
+      - name: Log Info
+        run: |
+          echo "Triggered by: ${{ github.event_name }}"
+          echo "Mode: ${{ steps.set_mode.outputs.mode }}"
+          echo "PR: ${{ github.event.issue.number || github.event.pull_request.number || github.event.number }}"
+          echo "Comment: ${{ github.event.comment.body }}"
+          echo "Repository: ${{ github.repository }}"
+      
+      - name: Dump GitHub Event
+        run: |
+          echo "Event payload:"
+          cat $GITHUB_EVENT_PATH
+      
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Run Reviewer or Reply Handler
+        uses: Rakeshreddysr2401/my-github-reviewer@ReviewCommentsReply
+        with:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PULL_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number || github.event.number }}
+          REPOSITORY: ${{ github.repository }}
+          EXCLUDE: "*.md,*.txt,package-lock.json,*.yml,*.yaml"
+          USE_VECTORSTORE: "true"
+          MAX_LOOP: "2"
+          MODE: ${{ steps.set_mode.outputs.mode }}
