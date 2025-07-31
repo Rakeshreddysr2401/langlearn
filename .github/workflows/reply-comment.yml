@@ -1,4 +1,4 @@
-name: "Rakhi2.0"
+name: "PR Review with Reply on Bot"
 on:
   issue_comment:
     types: [created]
@@ -6,42 +6,37 @@ on:
     types: [created]
 permissions: write-all
 jobs:
-  review-or-reply:
+  review-pr:
     if: |
-      (github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '/git-reply')) ||
-      (github.event_name == 'pull_request_review_comment' && github.event.comment.in_reply_to_id != null)
+      (github.event.issue.pull_request && contains(github.event.comment.body, '/git-reply')) ||
+      (github.event_name == 'pull_request_review_comment')
     runs-on: ubuntu-latest
     steps:
       - name: Set Mode
         id: set_mode
         run: |
-          if [[ "${{ github.event_name }}" == "pull_request_review_comment" && "${{ github.event.comment.in_reply_to_id }}" != "null" ]]; then
+          if [[ "${{ github.event_name }}" == "pull_request_review_comment" ]]; then
             echo "mode=reply" >> $GITHUB_OUTPUT
-            echo "Mode: Reply to existing comment"
+            echo "Mode: Reply to review comment"
           else
             echo "mode=review" >> $GITHUB_OUTPUT
-            echo "Mode: Initial review"
+            echo "Mode: Manual review triggered"
           fi
       
-      - name: Log Info
+      - name: Log PR Info
         run: |
-          echo "Triggered by: ${{ github.event_name }}"
+          echo "Event: ${{ github.event_name }}"
           echo "Mode: ${{ steps.set_mode.outputs.mode }}"
-          echo "PR: ${{ github.event.issue.number || github.event.pull_request.number }}"
-          echo "Comment: ${{ github.event.comment.body }}"
+          echo "PR Number: ${{ github.event.issue.number || github.event.pull_request.number }}"
           echo "Repository: ${{ github.repository }}"
-      
-      - name: Dump GitHub Event
-        run: |
-          echo "Event payload:"
-          cat $GITHUB_EVENT_PATH
+          echo "Comment: ${{ github.event.comment.body }}"
       
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
       
-      - name: Run Reviewer or Reply Handler
+      - name: Run GitHub Reviewer Action
         uses: Rakeshreddysr2401/my-github-reviewer@Memory
         with:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
