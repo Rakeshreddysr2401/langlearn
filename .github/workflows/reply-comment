@@ -1,4 +1,4 @@
-name: "PR Reply on Bot Testing"
+name: "PR Review with Reply on Bot"
 
 on:
   issue_comment:
@@ -42,4 +42,3 @@ jobs:
           EXCLUDE: "*.md,*.txt,package-lock.json,*.yml,*.yaml"
           USE_VECTORSTORE: "true"
           MAX_LOOP: "2"
-          MODE: "reply"
