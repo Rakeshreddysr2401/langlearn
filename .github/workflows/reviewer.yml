@@ -1,4 +1,4 @@
-name: "PR Review with GPT on Comment"
+name: "PR Review with GPT on Comment4"
 
 on:
   issue_comment:
