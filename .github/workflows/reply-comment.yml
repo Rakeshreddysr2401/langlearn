@@ -31,23 +31,31 @@ jobs:
           echo "PR Number: ${{ github.event.issue.number || github.event.pull_request.number }}"
           echo "Issue Number: ${{github.event.issue.number }}"
           echo "Pull Number: ${{ github.event.pull_request}}"
+          echo "Comment Body: ${{ github.event.comment.body }}"
+          echo "Comment ID: ${{ github.event.comment.id }}"
+          echo "Reply to ID: ${{ github.event.comment.in_reply_to_id }}"
           echo "Git Event: ${{ github.event}}"
           echo "Repository: ${{ github.repository }}"
           echo "Comment: ${{ github.event.comment.body }}"
+      - name: Print full GitHub event JSON
+        run: |
+          echo "🔍 Printing full GitHub event payload:"
+          cat "$GITHUB_EVENT_PATH"
+
       
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      # - name: Checkout Repository
+      #   uses: actions/checkout@v4
+      #   with:
+      #     fetch-depth: 0
       
-      - name: Run GitHub Reviewer Action
-        uses: Rakeshreddysr2401/my-github-reviewer@Memory
-        with:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PULL_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
-          REPOSITORY: ${{ github.repository }}
-          EXCLUDE: "*.md,*.txt,package-lock.json,*.yml,*.yaml"
-          USE_VECTORSTORE: "true"
-          MAX_LOOP: "2"
-          MODE: ${{ steps.set_mode.outputs.mode }}
+      # - name: Run GitHub Reviewer Action
+      #   uses: Rakeshreddysr2401/my-github-reviewer@Memory
+      #   with:
+      #     OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     PULL_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
+      #     REPOSITORY: ${{ github.repository }}
+      #     EXCLUDE: "*.md,*.txt,package-lock.json,*.yml,*.yaml"
+      #     USE_VECTORSTORE: "true"
+      #     MAX_LOOP: "2"
+      #     MODE: ${{ steps.set_mode.outputs.mode }}
