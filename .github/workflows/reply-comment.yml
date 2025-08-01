@@ -29,6 +29,9 @@ jobs:
           echo "Event: ${{ github.event_name }}"
           echo "Mode: ${{ steps.set_mode.outputs.mode }}"
           echo "PR Number: ${{ github.event.issue.number || github.event.pull_request.number }}"
+          echo "Issue Number: ${{github.event.issue.number }}"
+          echo "Pull Number: ${{ github.event.pull_request}}"
+          echo "Git Event: ${{ github.event}}"
           echo "Repository: ${{ github.repository }}"
           echo "Comment: ${{ github.event.comment.body }}"
       
