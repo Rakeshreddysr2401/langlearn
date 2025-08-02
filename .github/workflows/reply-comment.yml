@@ -49,7 +49,7 @@ jobs:
           fetch-depth: 0
       
       - name: Run GitHub Reviewer Action
-        uses: Rakeshreddysr2401/my-github-reviewer@Memory
+        uses: Rakeshreddysr2401/my-github-reviewer@ReplyReview
         with:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
