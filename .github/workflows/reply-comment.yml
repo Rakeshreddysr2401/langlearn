@@ -59,3 +59,5 @@ jobs:
           USE_VECTORSTORE: "true"
           MAX_LOOP: "2"
           MODE: ${{ steps.set_mode.outputs.mode }}
+          REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
