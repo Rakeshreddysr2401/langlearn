@@ -28,32 +28,52 @@ jobs:
             echo "Mode: Manual review triggered"
           fi
 
+      - name: Log PR Info
+        run: |
+          echo "Event: ${{ github.event_name }}"
+          echo "Mode: ${{ steps.set_mode.outputs.mode }}"
+          echo "PR Number: ${{ github.event.issue.number || github.event.pull_request.number }}"
+          echo "Issue Number: ${{ github.event.issue.number }}"
+          echo "Pull Number: ${{ github.event.pull_request }}"
+          echo "Comment Body: ${{ github.event.comment.body }}"
+          echo "Comment ID: ${{ github.event.comment.id }}"
+          echo "Reply to ID: ${{ github.event.comment.in_reply_to_id }}"
+          echo "Git Event: ${{ github.event }}"
+          echo "Repository: ${{ github.repository }}"
+          echo "Comment: ${{ github.event.comment.body }}"
+
+      - name: Print full GitHub event JSON
+        run: |
+          echo "🔍 Printing full GitHub event payload:"
+          cat "$GITHUB_EVENT_PATH"
+
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Cache pip dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('ReviewReply/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
+      # ✅ Add pip cache for faster dependency installs
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.10'
 
-      - name: Install Python dependencies
-        run: |
-          pip install --cache-dir ~/.cache/pip -r ReviewReply/requirements.txt
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
 
-      - name: Run GitHub Reviewer Logic
+      - name: Install dependencies
         run: |
-          python ReviewReply/main.py
-        env:
+          pip install --upgrade pip
+          pip install --cache-dir ~/.cache/pip -r requirements.txt || true  # fallback in case of no requirements.txt
+
+      - name: Run GitHub Reviewer Action
+        uses: Rakeshreddysr2401/my-github-reviewer@ReviewReply
+        with:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PULL_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
