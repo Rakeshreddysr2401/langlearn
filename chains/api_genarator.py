@@ -15,7 +15,7 @@ class GenerateAPI(BaseModel):
     api: str = Field(description="The API endpoint for the query")
     method: str = Field(description="HTTP method for the API (GET, POST, etc.)")
     path_variables: Dict[str, str] = Field(default_factory=dict, description="Path variables with types or values")
-    query_params: Dict[str, str] = Field(default_factory=dict, description="Query parameters with types or values")
+    query_params: Dict[str, str] = Fielult_factory=dict, description="Query parameters with types or values")
     headers: Dict[str, str] = Field(default_factory=dict, description="Headers with values")
     request_body: Dict[str, str] = Field(default_factory=dict, description="JSON request body with keys and types/values")
 
