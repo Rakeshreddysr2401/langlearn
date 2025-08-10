@@ -1,4 +1,4 @@
-name: "PR Review with Reply on Bot2"
+name: "PR Review with Reply on Bot-2"
 
 on:
   issue_comment:
