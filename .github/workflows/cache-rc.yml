@@ -72,7 +72,7 @@ jobs:
           pip install --cache-dir ~/.cache/pip -r requirements.txt || true  # fallback in case of no requirements.txt
 
       - name: Run GitHub Reviewer Action
-        uses: Rakeshreddysr2401/my-github-reviewer@ReviewReply
+        uses: Rakeshreddysr2401/my-github-reviewer@ReviewReplyPromptConcise
         with:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
