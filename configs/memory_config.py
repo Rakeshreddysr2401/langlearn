@@ -1,5 +1,4 @@
 import os
-import redis
 import urllib.parse
 import ssl
 from dotenv import load_dotenv

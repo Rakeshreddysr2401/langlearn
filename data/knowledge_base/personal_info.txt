@@ -1,0 +1,14 @@
+My name is Singireddy Rakesh Reddy.
+I am a Junior Software Developer since December 2024.
+I work with Java, Spring Boot, GraphQL, REST APIs, and frontend technologies like React, Redux, and XState.
+I am learning AI, LangChain, LangGraph, FastAPI, and Generative AI to build AI agents.
+I am preparing for GATE 2026 and want to build a career in AI and Robotics.
+I am Telugu.
+I also plan to start a YouTube channel.
+I live with my family.
+I have not shared detailed family information, but they are very supportive of my career and studies.
+My family encourages me to focus on AI, robotics, and competitive exam preparation.
+My hobbies include coding, experimenting with AI/ML tools, and building projects.
+I enjoy painting and decorating my home walls with creative colors like cotton candy, forest green, and mountain retreat.
+I also like learning new skills such as frontend development (HTML, CSS, JavaScript) to crack machine coding rounds.
+I enjoy reading about technology, AI, and robotics.

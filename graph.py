@@ -48,12 +48,12 @@ def create_chat_graph():
         if satisfied or retry_count > MAX_RETRIES:
             return END
         elif not satisfied and retry_count <= MAX_RETRIES:
-            return "chatAgent"
+            return "agent"
         return END
 
     # Add conditional edges
     graph_builder.add_conditional_edges(
-        "chatAgent",
+        "agent",
         chat_agent_transition,
         {
             "tools": "tools",
