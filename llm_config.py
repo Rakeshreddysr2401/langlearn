@@ -1,10 +1,11 @@
 # llm_config.py
 from langchain.agents import initialize_agent, AgentType
 from langchain.chat_models import init_chat_model as init_openai_model
-from langchain_community.chat_models import ChatOllama
 from langchain_google_genai import ChatGoogleGenerativeAI
 from tools import get_tools
-from langchain_community.chat_models import ChatOllama
+from langchain_ollama import ChatOllama
+
+MAC = "192.168.1.22:11434"  # your Mac Mini IP
 # Provider-Model registry
 PROVIDER_REGISTRY = {
     "openai": {
@@ -15,6 +16,8 @@ PROVIDER_REGISTRY = {
         "gpt-4o-mini": lambda temperature: init_openai_model("gpt-4o-mini", temperature=temperature),
     },
     "ollama": {
+        "qwen2.5vl:7b": lambda temperature: ChatOllama(model="qwen2.5vl:7b", temperature=temperature),
+        "qwen2.5:7b": lambda temperature: ChatOllama(model="qwen2.5:7b", temperature=temperature,base_url=f"http://{MAC}"),
         "llama3": lambda temperature: ChatOllama(model="llama3", temperature=temperature),
         "mistral": lambda temperature: ChatOllama(model="mistral", temperature=temperature),
         "phi3:mini": lambda temperature: ChatOllama(model="phi3:mini", temperature=temperature),

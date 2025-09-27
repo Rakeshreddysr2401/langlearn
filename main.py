@@ -110,8 +110,11 @@ async def stream_chat(
 
         init_state = {
             "messages": [identity_prompt, {"role": "user", "content": message}],
-            "users_query": message
+            "users_query": message,
+            "retry_count": 0,
+            "review_feedback": {}
         }
+
 
         if interrupt:
             parsed_data = json.loads(message)
