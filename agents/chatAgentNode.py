@@ -1,7 +1,11 @@
 # agents/chatAgentNode.py
+import logging
+
 from langchain_core.messages import BaseMessage, AIMessage
 from chains.chatAgentChain import get_retry_prompt, chat_chain
 from states.states import State
+
+logger = logging.getLogger(__name__)
 
 
 def chatAgent(state: State):
@@ -9,7 +13,7 @@ def chatAgent(state: State):
     review = state.get("review_feedback")
     retry_count = state.get("retry_count", 0)
 
-    print(f"Chat Agent called : {retry_count+1} st time")
+    logger.info("chatAgent invoked (attempt %d)", retry_count + 1)
 
     full_messages: list[BaseMessage] = []
 
@@ -27,8 +31,8 @@ def chatAgent(state: State):
 
     try:
         response: AIMessage = chat_chain.invoke(full_messages)
-    except Exception as e:
-        print(f"Error in chat_chain.invoke: {e}")
+    except Exception:
+        logger.exception("chat_chain.invoke failed")
         raise
 
     return {

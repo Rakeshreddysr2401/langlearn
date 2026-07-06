@@ -21,6 +21,11 @@ __pycache__/
 # Ignore secrets
 .env
 .env.*
+!.env.example
+
+# Ignore personal/private knowledge base data (contains real PII)
+data/knowledge_base/personal_details.txt
+data/knowledge_base/personal_knowledge_base.txt
 
 # Ignore local DBs and logs
 *.log

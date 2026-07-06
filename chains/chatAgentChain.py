@@ -1,7 +1,7 @@
 # chains/chatAgentChain.py
 from langchain_core.messages import SystemMessage
 from langchain_core.runnables import RunnableLambda
-from llm_config import llm_with_tools
+from llm_config import get_default_llm_with_tools
 
 
 def get_retry_prompt(retry_count: int, critique: str, suggestions: list[str] = None) -> SystemMessage:
@@ -23,5 +23,5 @@ Please revise your response carefully. Keep it concise (<120 words), relevant, a
 """.strip())
 
 
-# Chat chain using the LLM with tools
-chat_chain = RunnableLambda(lambda messages: llm_with_tools.invoke(messages))
+# Chat chain using the LLM with tools (lazily resolved on first invocation)
+chat_chain = RunnableLambda(lambda messages: get_default_llm_with_tools().invoke(messages))

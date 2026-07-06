@@ -3,9 +3,10 @@ load_dotenv()
 
 from langchain.output_parsers import PydanticOutputParser
 from langchain_core.prompts import PromptTemplate
+from langchain_core.runnables import RunnableLambda
 from pydantic import BaseModel, Field
 from typing import Literal, Optional, List
-from llm_config import llm
+from llm_config import get_default_llm
 
 
 class ReviewFeedback(BaseModel):
@@ -44,5 +45,5 @@ Final Assistant Response:
     partial_variables={"format_instructions": format_instructions}
 )
 
-# Final chain: Prompt → LLM → Pydantic parser
-review_chain = review_prompt | llm | parser
+# Final chain: Prompt → LLM (lazily resolved on first invocation) → Pydantic parser
+review_chain = review_prompt | RunnableLambda(lambda messages: get_default_llm().invoke(messages)) | parser

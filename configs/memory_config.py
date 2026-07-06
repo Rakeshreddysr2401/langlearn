@@ -1,19 +1,22 @@
-import os
-import redis
-import urllib.parse
+import logging
 import ssl
-from dotenv import load_dotenv
+import urllib.parse
 
+import redis
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.checkpoint.redis import RedisSaver
 
-# Load environment variables from .env
-load_dotenv()
-redis_url = os.getenv("REDIS_URL", "local")
+from config import get_settings
+
+logger = logging.getLogger(__name__)
+
 
 def get_memory():
-    if redis_url == "local":
-        print("✅ Using InMemorySaver (local dev)")
+    settings = get_settings()
+    redis_url = settings.redis_url
+
+    if not redis_url:
+        logger.warning("REDIS_URL not set; using in-memory checkpointer (state is lost on restart).")
         return MemorySaver()
 
     try:
@@ -30,10 +33,12 @@ def get_memory():
         )
 
         redis_client.ping()
-        print(f"✅ Connected to Redis at {parsed.hostname}:{parsed.port}")
+        logger.info("Connected to Redis checkpointer at %s:%s", parsed.hostname, parsed.port)
         return RedisSaver(redis_client)
 
-    except Exception as e:
-        print("❌ Redis connection failed. Falling back to InMemorySaver.")
-        print(f"Error: {e}")
+    except Exception:
+        logger.exception(
+            "Redis connection failed; falling back to in-memory checkpointer. "
+            "Conversation state will NOT persist across restarts until this is fixed."
+        )
         return MemorySaver()

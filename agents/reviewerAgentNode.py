@@ -1,11 +1,14 @@
 # agents/reviewerAgentNode.py
+import logging
+
 from langgraph.config import get_stream_writer
 
 from chains.reviewerAgentChain import ReviewFeedback, review_chain
+from configs.constants import MAX_RETRIES
 from states.states import State
 
+logger = logging.getLogger(__name__)
 
-MAX_RETRIES = 2
 
 def reviewerAgent(state: State):
     retry_count = state.get("retry_count", 0)
@@ -13,11 +16,11 @@ def reviewerAgent(state: State):
     user_query = state.get("users_query")
     last_ai = state.get("chatAgentResponse")
 
-    print(f"Reviewer Agent called : {retry_count+1} time")
+    logger.info("reviewerAgent invoked (attempt %d)", retry_count + 1)
 
     # If we've exceeded max retries, accept the current response and END
     if retry_count >= MAX_RETRIES:
-        print(f"Max retries exceeded. Accepting final response: {last_ai}")
+        logger.info("Max retries exceeded; accepting final response as-is.")
         writer = get_stream_writer()
         writer({"data": last_ai, "type": "final_response"})
         return {
@@ -38,19 +41,19 @@ def reviewerAgent(state: State):
             "ai_response": last_ai.content if last_ai else "",
             "user_query": user_query or ""
         })
-    except Exception as e:
-        print(f"Error in review_chain.invoke: {e}")
+    except Exception:
+        logger.exception("review_chain.invoke failed")
         # If review fails, accept the response
         return {
             "final_response": last_ai,
             "review_feedback": {"satisfied": True, "reason": "review_error"}
         }
 
-    feedback_dict = feedback.dict()
+    feedback_dict = feedback.model_dump()
     satisfied = feedback_dict.get("satisfied", False)
 
     if satisfied:
-        print("Satisfied by reviewer")
+        logger.info("Response satisfied reviewer")
         writer = get_stream_writer()
         writer({"data": last_ai , "type": "final_response"})
 

@@ -1,36 +1,41 @@
-import os
-from dotenv import load_dotenv
+import logging
+from functools import lru_cache
+
 from langchain_openai import OpenAIEmbeddings
 from langchain_qdrant import Qdrant
 from qdrant_client import QdrantClient
 from langchain_core.tools import tool
 
-load_dotenv()
+from config import get_settings
 
-# Initialize OpenAI embedding
-embeddings = OpenAIEmbeddings()
+logger = logging.getLogger(__name__)
 
-# Connect to Qdrant
-client = QdrantClient(
-    url=os.getenv("QDRANT_URL"),
-    api_key=os.getenv("QDRANT_API_KEY")
-)
 
-# Initialize vector store
-vectorstore = Qdrant(
-    client=client,
-    collection_name="personal_knowledge_base",
-    embeddings=embeddings  # ✅ correct param name
-)
+@lru_cache
+def get_vectorstore() -> Qdrant:
+    """Lazily builds the Qdrant vector store on first use, so importing this
+    module never requires a reachable Qdrant instance or valid credentials."""
+    settings = get_settings()
+    embeddings = OpenAIEmbeddings()
+    client = QdrantClient(url=settings.qdrant_url, api_key=settings.qdrant_api_key)
+    return Qdrant(
+        client=client,
+        collection_name="personal_knowledge_base",
+        embeddings=embeddings,
+    )
 
 
 @tool
 def qdrant_search_tool(query: str):
     """Questions about Rakesh (skills, projects, experience)** → Use `qdrant_search_tool` first
        Searches personal knowledge base for boss-related questions."""
-    results = vectorstore.similarity_search(query, k=3)
+    try:
+        results = get_vectorstore().similarity_search(query, k=3)
+    except Exception:
+        logger.exception("Qdrant similarity_search failed for query=%r", query)
+        return "I'm having trouble reaching my knowledge base right now."
     if not results:
-        return "I couldn’t find anything in my knowledge base for that."
+        return "I couldn't find anything in my knowledge base for that."
     return "\n\n".join([doc.page_content for doc in results])
 
 

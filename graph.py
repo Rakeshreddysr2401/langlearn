@@ -3,12 +3,10 @@ from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
 from agents.chatAgentNode import chatAgent
 from agents.reviewerAgentNode import reviewerAgent
+from configs.constants import MAX_RETRIES
 from configs.memory_config import get_memory
 from states.states import State
 from tools import get_tools
-
-# Constants
-MAX_RETRIES = 2
 
 
 def create_chat_graph():

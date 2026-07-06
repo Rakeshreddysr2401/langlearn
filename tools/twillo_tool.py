@@ -1,21 +1,21 @@
-from twilio.rest import Client
-from langchain_core.tools import tool
-from pydantic import BaseModel, Field
-from typing import Optional
-from dotenv import load_dotenv
-import os
+import logging
 import time
+from typing import Optional
+
+from langchain_core.tools import tool
 from langgraph.types import interrupt
+from pydantic import BaseModel, Field
+from twilio.rest import Client
 
-# 🔐 Load environment variables
-load_dotenv()
+from config import get_settings
 
-TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
-TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
-TWILIO_FROM_NUMBER = os.getenv("TWILIO_FROM_NUMBER")
+logger = logging.getLogger(__name__)
+settings = get_settings()
+
+TWILIO_FROM_NUMBER = settings.twilio_from_number
 
 # 📞 Twilio client
-client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+client = Client(settings.twilio_account_sid, settings.twilio_auth_token)
 
 # 📝 Input schema
 class WhatsAppMessageArgs(BaseModel):
@@ -79,7 +79,7 @@ def send_whatsapp_message(
     human_approval = interrupt(approval_request)
 
     # Check if human approved the action
-    print("human approval...",human_approval)
+    logger.info("Human approval response: %s", human_approval)
     if not human_approval or human_approval.get("status") != "approved":
         return WhatsAppMessageResult(
             status="fail",
@@ -95,7 +95,7 @@ def send_whatsapp_message(
             to=f"whatsapp:{normalized}",
             body=human_approval.get("text_msg")
         )
-        print("Message is being sent... ⏳")
+        logger.info("WhatsApp message dispatched, sid=%s", msg.sid)
 
         time.sleep(3)
         final = client.messages(msg.sid).fetch()
@@ -115,6 +115,7 @@ def send_whatsapp_message(
             )
 
     except Exception as e:
+        logger.exception("Failed to send WhatsApp message")
         return WhatsAppMessageResult(
             status="fail",
             message_sid=None,

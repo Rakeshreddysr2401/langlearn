@@ -1,7 +1,6 @@
-
-from dotenv import load_dotenv
 from langchain_tavily import TavilySearch
-load_dotenv()
+
+import config  # noqa: F401 - ensures .env is loaded into process env before TavilySearch reads it
 
 tavily_tool = TavilySearch()
 
